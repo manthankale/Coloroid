@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+
+
+</head>
+
+<body>
+  <style>
+    p {
+      margin: 15px 0;
+    }
+
+    div {
+      text-align: left;
+      text-indent: 0px;
+      padding: 0px 0px 0px 0px;
+      margin: 0px 0px 0px 0px;
+    }
+
+    td.td {
+      border-width: 0px;
+      background-color: #99cc00;
+      text-align: center;
+
+    }
+  </style>
+  <div id="parentDiv">
+    <input type="button" value="4*4" onclick="Javascript:dynamicTable(4,7);">
+    <input type="button" value="8*8" onclick="Javascript:dynamicTable(8,14);">
+    <input type="button" value="12*12" onclick="Javascript:dynamicTable(12,21);">
+  </div>
+  <br/> Moves :
+  <p id='noOfMovesdone'></p>
+
+  Par :
+  <p id='noOfMovesAvailable'></p>
+
+  <div id="parentDiv1"></div>
+
+  <br/>
+  <br/>
+
+  <button onclick="changeColor('red')" style="background-color: red;width:100px;height:50px;"></button>
+  <button onclick="changeColor('blue')" style="background-color: blue;width:100px;height:50px;"></button>
+  <button onclick="changeColor('lightblue')" style="background-color: lightblue;width:100px;height:50px;"></button>
+  <button onclick="changeColor('green')" style="background-color: green;width:100px;height:50px;"></button>
+  <button onclick="changeColor('gray')" style="background-color: gray;width:100px;height:50px;"></button>
+  <button onclick="changeColor('pink')" style="background-color: pink;width:100px;height:50px;"></button>
+
+  <script>
+
+    var gridSize = 0;
+    var gridArray = [];
+    var adjacentNodes = [];
+    var selectedNodes = [];
+    var noofMovesUsed = 0;
+    var noOfmoves = 0;
+    var selectedColor = '';
+
+
+    //by default 4*4 table gets created
+    dynamicTable(4,7);
+
+
+    function dynamicTableBySelection() {
+
+      // selectedNodes.push(0);
+
+      // var paraNoOfMoves = document.getElementById('noOfMovesdone')
+      // paraNoOfMoves.innerHTML = noofMoves;
+      // noOfmoves = noofMoves;
+
+
+      // gridSize = arraySize;
+      var myTableDiv = document.getElementById("parentDiv1");
+      myTableDiv.innerHTML = "";
+      var table = document.createElement('table');
+      // var tableBody = document.createElement('tbody');
+
+      // table.border = '1';
+      // table.appendChild(tableBody);
+      // gridArray = new Array(gridSize * gridSize);
+
+      // var colorArray = ['red', 'blue', 'lightblue', 'green', 'gray', 'pink'];
+      //TABLE ROWS
+      for (i = 0; i < gridArray.length; i++) {
+
+        var tr, td;
+        if (i == 0)
+          tr = document.createElement('TR');
+
+        td = document.createElement('TD');
+        // var randomColor = colorArray[Math.floor(Math.random() * colorArray.length)];
+        var randomColor = gridArray[i];
+        td.setAttribute('color', randomColor);
+        td.style = "background-color:" + randomColor;
+        td.width = '200px';
+        td.height = '50px';
+        td.colour = randomColor;
+        tr.appendChild(td);
+        // gridArray[i] = randomColor;
+
+        if ((((i + 1) % gridSize) == 0) && i != 0)//if grid ends or not first time.
+        {
+          table.appendChild(tr);
+          tr = document.createElement('TR');
+        }
+      }
+      myTableDiv.appendChild(table);
+      console.log(gridArray);
+      // selectedColor = gridArray[0];//selecting first cell.
+    }
+
+    function dynamicTable(arraySize, noofMoves) {
+      // debugger;
+      selectedNodes.push(0);
+      console.log('noofMoves ', noofMoves);
+      var noOfMovesAvailable = document.getElementById('noOfMovesAvailable')
+      noOfMovesAvailable.innerHTML = noofMoves;
+      var noOfMovesdone = document.getElementById('noOfMovesdone')
+      noOfMovesdone.innerHTML = 0;
+      noOfmoves = noofMoves;
+
+
+      gridSize = arraySize;
+      var myTableDiv = document.getElementById("parentDiv1");
+      myTableDiv.innerHTML = "";
+      var table = document.createElement('table');
+      // var tableBody = document.createElement('tbody');
+
+      // table.border = '1'
+      // table.appendChild(tableBody);
+      gridArray = new Array(gridSize * gridSize);
+
+      var colorArray = ['red', 'blue', 'lightblue', 'green', 'gray', 'pink'];
+      //TABLE ROWS
+      for (i = 0; i < gridArray.length; i++) {
+
+        var tr, td;
+        if (i == 0)
+          tr = document.createElement('TR');
+
+        td = document.createElement('TD');
+        var randomColor = colorArray[Math.floor(Math.random() * colorArray.length)];
+        td.setAttribute('Colour', randomColor);
+        td.style = "background-color:" + randomColor;
+        td.width = '200px';
+        td.height = '50px';
+        td.colour = randomColor;
+        tr.appendChild(td);
+        gridArray[i] = randomColor;
+
+        if ((((i + 1) % gridSize) == 0) && i != 0)//if grid ends or not first time.
+        {
+          table.appendChild(tr);
+          tr = document.createElement('TR');
+        }
+      }
+      myTableDiv.appendChild(table);
+      console.log(gridArray);
+      selectedColor = gridArray[0];//selecting first cell.
+    }
+
+    function changeColor(color) {
+
+      selectedColor = color;
+
+      noofMovesUsed += 1;
+      // if (noofMovesUsed <= noOfmoves) {
+
+        adjacentNodes = [];
+        for (var index = 0; index < selectedNodes.length; index++) {
+
+          findAllAdjacentNode(selectedNodes[index] + 1);
+
+        }
+
+        console.log('adjacentNodes',adjacentNodes);
+
+
+        adjacentNodes = Array.from(new Set(adjacentNodes));
+
+        console.log('adjacentNodes after distinct',adjacentNodes);
+
+        //now check if the adjacent nodes.
+
+        for (let index = 0; index < adjacentNodes.length; index++) {
+          console.log('gridArray[adjacentNodes[i] - 1] ',gridArray[adjacentNodes[i] - 1]);
+          if (gridArray[adjacentNodes[i] - 1] == selectedColor) {
+            selectedNodes.push(adjacentNodes[i] - 1);
+          }
+        }
+
+
+
+          console.log('selectedNodes',selectedNodes);
+
+          selectedNodes = Array.from(new Set(selectedNodes));
+
+          console.log('selectedNodes after distinct',selectedNodes);
+
+          //indices of selected nodes.
+          for (let index = 0; index < selectedNodes.length; index++) {
+            gridArray[selectedNodes[index]] = selectedColor;
+
+          }
+
+          console.log('gridArray after changing color',gridArray);
+
+          dynamicTableBySelection();
+      // }
+      // else { alert('Game Over!!') }
+    }
+
+    function findAllAdjacentNode(node) {
+      var block=gridSize;
+
+      var Node=parseInt(node);
+
+
+      var isFirstrow=false,isLastColumn=false,isLastRow=false;
+      var isFirstColumn=false;
+
+      // debugger;
+      if(Node%block==0)
+      {
+      // console.log("last column");
+      isLastColumn=true;
+      }
+
+      for (i = 1; i < block*i ; i++)
+      {
+        // console.log(i);
+      if(Node<=(block*i))
+      {
+      // console.log('row is '+i);
+      if(i==block)
+      {
+      // console.log('last row');
+      isLastRow=true;
+      }
+      if(Node<=block)
+      {
+      // console.log('first row');
+      isFirstrow=true;
+      }
+
+      // console.log("Node "+ Node);
+      // console.log("blck "+ ((block*i)-(i)+(1)));
+
+// var test=block*i;
+// var test1=(block*i)-(i);
+// var test2=(block*i)-(i)+(1);
+
+
+      if(Node==((block*i)-(block)+(1)))
+      {
+      // console.log('FIRST column');
+      isFirstColumn=true;
+      }
+      break;
+      }
+      else
+      continue;
+      }
+
+      // console.log("isFirstrow " + isFirstrow);
+
+      // console.log("isFirstColumn " + isFirstColumn);
+
+      // console.log("isLastColumn " + isLastColumn)
+
+      // console.log("isLastRow " + isLastRow)
+      // debugger;
+      if(isFirstrow)
+      {
+      if(isFirstColumn)
+      {
+       console.log("All adjacent node "+(Node+1)+" "+Node+block );
+       adjacentNodes.push(Node+1);
+       adjacentNodes.push(Node+block);
+      }
+
+
+      else if(isLastColumn)
+        {
+         console.log("All adjacent node "+(Node-1)+" "+ (block+Node));
+         adjacentNodes.push(Node-1);
+         adjacentNodes.push(Node+block);
+        }
+      else
+      {
+      console.log("All adjacent node"+(Node-1)+" "+(Node+1)+ " "+(Node+block) );
+      adjacentNodes.push(Node-1);
+         adjacentNodes.push(Node+block);
+
+         adjacentNodes.push(Node+1);
+      }
+      }
+
+      else if(isLastRow)
+      {
+      // console.log("isLastRow "+ isLastRow);
+      if(isFirstColumn)
+      {
+       console.log("All adjacent node "+(Node+1)+" "+(Node-block) );
+       adjacentNodes.push(Node+1);
+         adjacentNodes.push(Node-block);
+
+      }
+      else if(isLastColumn)
+        {
+         console.log("All adjacent node "+(Node-1)+" "+(Node-block));
+
+         adjacentNodes.push(Node-1);
+         adjacentNodes.push(Node-block);
+        }
+      else
+      {
+      console.log("All adjacent node "+(Node-1)+" "+(Node+1)+" "+(Node-block));
+
+      adjacentNodes.push(Node-1);
+         adjacentNodes.push(Node-block);
+         adjacentNodes.push(Node+1);
+      }
+
+      }
+      else
+      {
+      console.log("All adjacent node "+(Node-1)+" "+(Node+1)+" "+(Node-block)+" "+(Node+block));
+      adjacentNodes.push(Node-1);
+         adjacentNodes.push(Node-block);
+         adjacentNodes.push(Node+1);
+         adjacentNodes.push(Node+block);
+      }
+
+    }
+  </script>
+</body>
+
+</html>
